@@ -38,6 +38,10 @@ export type moviePageProps = {
   similarMoviesSelection: movieType[]
 }
 
+export type heroPropsType={
+    movie?: movieType
+}
+
 export type movieDetailPropsType={
   adult?: boolean,
   backdrop_path?: string,

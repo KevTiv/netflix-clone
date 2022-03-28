@@ -8,9 +8,19 @@ import { homePagePropsType } from '../type'
 
 import Navbar from '../components/navbar'
 import MoviePanel from '../components/moviePanel'
+import { useEffect, useRef, useState } from 'react'
+import Hero from '../components/hero'
 
 
 const Home: NextPage<homePagePropsType> = (props) => {
+  let appBody = useRef<HTMLElement>(null)
+  const [isMobileMenuOpen, setIsOpen] = useState<boolean>(false)
+  const [highlightedHeroMovie, setHighlightedHeroMovie] = useState<number>(0)
+  useEffect(()=>{
+    const highlightPopularMovie=()=> setHighlightedHeroMovie(Math.floor(Math.random() * props.popularMoviesSelection!.length))
+    
+    if(props.popularMoviesSelection)  highlightPopularMovie()
+  },[])
   return (
     <div className={styles.container}>
       <Head>
@@ -19,8 +29,10 @@ const Home: NextPage<homePagePropsType> = (props) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Navbar />
-      <main className={`${styles.main} mt-16`}>
+      <Navbar setIsOpen={()=>setIsOpen(!isMobileMenuOpen)} isMobileMenuOpen={isMobileMenuOpen} 
+        closeMenu={()=>setIsOpen(false)}/>
+      <main ref={appBody} className={`${styles.main} mt-16 ${isMobileMenuOpen? 'opacity-40' : 'opacity-100'}`}>
+        <Hero movie={props.popularMoviesSelection?.[highlightedHeroMovie]}/>
         <MoviePanel PanelName={'Popular on Netflix'} moviesSelection={props.popularMoviesSelection}/>
         <MoviePanel PanelName={'Trending on Netflix'} moviesSelection={props.trendingMoviesSelection}/>
         <MoviePanel PanelName={'Action'} moviesSelection={props.actionMoviesSelection}/>
@@ -64,6 +76,9 @@ export async function getServerSideProps(){
     await axios.get(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY_V3}`)
     .then(( res:AxiosResponse)=>{
         popularMoviesSelection = res.data.results.slice(0,20)
+
+        // movieTrailerId = movie.videos.results.find((video: videoType) => video.name === 'Official Trailer').key
+        // console.log('movieTrailerID==>',movieTrailerId)
     })
     .catch((err:AxiosResponse)=>{
       console.error('Error fetching Popular movie selection ',err)

@@ -4,8 +4,8 @@ import Image from 'next/image'
 import {useRouter} from 'next/router'
 import { useEffect, useState, useRef } from 'react'
 import { movieDetailPropsType, moviePageProps, videoType } from '../../type'
-import YouTube from 'react-youtube'
 import MoviePanel from '../../components/moviePanel'
+import ReactPlayer from 'react-player'
 
 
 const Movie:NextPage<moviePageProps> = ({movie, movieTrailerId, similarMoviesSelection}) => {
@@ -15,37 +15,36 @@ const Movie:NextPage<moviePageProps> = ({movie, movieTrailerId, similarMoviesSel
   const [isVideoPlay, setIsVideoPlay] = useState<boolean>(false)
   const [isScreenMobile, setIsMobileScreen] = useState<boolean>(false)
 
-  const opts = {
-      height: `${videoContainer.current?.clientHeight}`,
-      width: `${videoContainer.current?.clientWidth}`,
-      playerVars: {
-        // https://developers.google.com/youtube/player_parameters
-        autoplay: 1,
-        controls: 0,
-        mute: 1,
-      },
-    } as const
-
   useEffect(()=>{
-    console.log('trailer ID', movieTrailerId)
     window.innerWidth >= 1024 ? setIsMobileScreen(true) : setIsMobileScreen(false)
     
     setTimeout(()=>{
       setIsVideoPlay(true)
-    },5000)
+    },1500)
 
   },[])
   return (
     <>
       <div className=" relative w-full h-[100vh]">
         <div>
-          <div ref={videoContainer} className="relative w-[100vw] h-auto lg:h-[90vh] pointer-events-none" >
+          <div ref={videoContainer} className="relative w-[100vw] aspect-[16/12] pointer-events-none" >
             {isVideoPlay && isScreenMobile && movieTrailerId!==null ? 
-              <YouTube className="opacity-60" videoId={movieTrailerId} opts={opts} onEnd={()=>setIsVideoPlay(false)}/>
+              <ReactPlayer className="pointer-events-none" url={`https://www.youtube.com/watch?v=${movieTrailerId}`}
+                width={`${videoContainer.current?.clientWidth}px`} height={`${videoContainer.current?.clientHeight}px`}
+                onEnded={()=>setIsVideoPlay(false)} volume={0} muted={true} 
+                config={{
+                    youtube: {
+                        playerVars: { 
+                            autoplay: 1,
+                            controls: 0,
+                            mute: 1,
+                          }
+                    }
+                }}
+              />
             :
-              <Image className="opacity-30" src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`} alt={movie.title} layout="fill" priority/>
+              <Image className="opacity-30" src={`${process.env.NEXT_PUBLIC_GET_POSTER_URL}${movie.poster_path}`} alt={movie.title} layout="fill" priority/>
             }
-            {/* <Image className="opacity-30" src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`} alt={movie.title} layout="fill" priority/> */}
 
           </div>
             <div className="z-10 w-full h-32 absolute top-8 left-0 flex justify-center items-center">
@@ -53,7 +52,7 @@ const Movie:NextPage<moviePageProps> = ({movie, movieTrailerId, similarMoviesSel
                 <Image src={'/netflix-logo.png'} alt={'Netflix'} layout="fill" />
               </span>
             </div>
-            <span onClick={()=>router.push('/')} className="z-10 absolute w-8 md:w-14 aspect-1 top-8 right-4">
+            <span onClick={()=>router.push('/')} className="z-10 absolute w-8 md:w-14 aspect-1 top-8 right-4 cursor-pointer">
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
                 <path fill="white" d="M18.36 19.78L12 13.41l-6.36 6.37l-1.42-1.42L10.59 12L4.22 5.64l1.42-1.42L12 10.59l6.36-6.36l1.41 1.41L13.41 12l6.36 6.36z"/>
               </svg>
@@ -140,7 +139,6 @@ export async function getServerSideProps(context:any){
   .then((res:AxiosResponse)=>{
     movie = res.data
     movieTrailerId = movie.videos.results.find((video: videoType) => video.name === 'Official Trailer').key
-    console.log('movieTrailerID==>',movieTrailerId)
   })
   .catch((err:AxiosResponse)=>{
     console.error(err)
