@@ -6,25 +6,43 @@ import ReactPlayer from 'react-player'
 import { MoviePanelProps, movieType, videoType } from '../type'
 import styles from '../styles/Home.module.scss'
 
-const MoviePanel = ({PanelName, moviesSelection}:MoviePanelProps) => {
+const MoviePanel = ({PanelName, moviesSelection, lazyLoad}:MoviePanelProps) => {
+    let panelRef = useRef<HTMLDivElement>(null)
+    const [showPanel, setShowPanel] = useState<boolean>(false)
     
-    
+    useEffect(()=>{
+        const observer = new IntersectionObserver(([entry]) => {
+            //Show Panel
+            if (entry.isIntersecting) setShowPanel(true)
+        },{
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.1
+        }
+        )
+
+        if(panelRef.current) observer.observe(panelRef.current)
+
+    },[panelRef])
   return (
     <>
-        <div id={PanelName.toLowerCase()} className="w-full px-4 my-4 md:my-6 ">
-            <h1 className="text-white/80 text-3xl md:text-4xl my-1 md:my-2 font-bold">{PanelName}</h1>
-            <div className="overflow-hidden w-full h-full mx-4 ">
-                {/* */}
-                <div className={`relative overflow-x-scroll overflow-y-hidden whitespace-nowrap py-6 ${styles.no_scrollbar}`}>
-                    {moviesSelection?.map( (movie :movieType) =>{
-                        return(
-                            <MovieCard key={movie.id!} movie={movie} />
-                        )
-                    })
-                    }
-                </div>
+        
+            <div ref={panelRef} id={PanelName.toLowerCase()} className="w-full px-4 my-4 md:my-6 ">
+                <h1 className="text-white/80 text-3xl md:text-4xl my-1 md:my-2 font-bold">{PanelName}</h1>
+                {showPanel || !lazyLoad ? 
+                    <div className="overflow-hidden w-[98%] h-full mx-4 ">
+                            <div  className={`relative overflow-x-scroll overflow-y-hidden whitespace-nowrap py-10 ${styles.no_scrollbar}`}>
+                                {moviesSelection?.map( (movie :movieType) =>{
+                                    return(
+                                        <MovieCard key={movie.id!} movie={movie} />
+                                    )
+                                })
+                                }
+                            </div>
+                    </div>
+                :null}
             </div>
-        </div>
+        
     </>
   )
 }
@@ -32,6 +50,7 @@ const MoviePanel = ({PanelName, moviesSelection}:MoviePanelProps) => {
 type movieCardProps={
     movie: movieType
 }
+
 const MovieCard=({movie}:movieCardProps)=>{
     const axios = require('axios')
     const router = useRouter()
@@ -44,14 +63,17 @@ const MovieCard=({movie}:movieCardProps)=>{
 
     useEffect(()=>{
         window.innerWidth >= 1024 ? setIsMobileScreen(true) : setIsMobileScreen(false)
+        
         const getMovieTrailer = async()=>{
             await axios.get(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY_V3}&language=en-US&append_to_response=videos`)
             .then((res:AxiosResponse)=>{
                 let currMovie = res.data
                 let movieVideosDetail = currMovie?.videos.results.find((video: videoType) => video.name === 'Official Trailer')
                 setTrailerID(movieVideosDetail?.key)
-
-                if(trailerID!) setIsTrailerFound(false)
+            }).catch((err:AxiosResponse)=>{
+                console.error('movie=>',movie,err)
+                setShowTrailer(false)
+                setIsTrailerFound(false)
             })
         }
 
@@ -59,20 +81,20 @@ const MovieCard=({movie}:movieCardProps)=>{
     },[])
     return(
         <>
-            <div 
-                ref={videoContainer}
+            <div ref={videoContainer}
+                className={`relative inline-block w-[18rem] md:w-[20rem] aspect-[16/12] rounded-md mx-1 cursor-pointer transition-all ${trailerID ? 'hover:scale-y-[1.25] hover:scale-x-[1.5] hover:z-30 hover:shadow-lg ease-in-out duration-200' : ''}`}
                 onMouseEnter={()=>{
                     setShowTrailer(true)
-                    
                 }}
-                onMouseLeave={()=>setShowTrailer(false)}
-                className="relative inline-block w-[18rem] md:w-[20rem] aspect-[16/12] rounded-md bg-white/5 cursor-pointer hover:scale-y-[1.25] hover:scale-x-[1.025] hover:z-30 ease-in-out duration-200"
+                onMouseLeave={()=>{
+                    setShowTrailer(false)
+                }}
                 onClick={()=>{
                     router.push(`/movie/${movie.id}`)
                 }}>
-                {showTrailer && isMobileScreen && isTrailerFound ? 
+                {showTrailer && isMobileScreen && isTrailerFound && trailerID!==null ? 
                     <ReactPlayer className="pointer-events-none" url={`https://www.youtube.com/watch?v=${trailerID}`}
-                        width={`${videoContainer.current?.clientWidth}px`} height={`${videoContainer.current?.clientHeight}px`}
+                        width={`100%`} height={`100%`}
                         onEnded={()=>setShowTrailer(false)} volume={0} muted={true} 
                         config={{
                             youtube: {
@@ -96,6 +118,5 @@ const MovieCard=({movie}:movieCardProps)=>{
             </div>
         </>
     )
-
 }
 export default MoviePanel

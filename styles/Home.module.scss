@@ -113,6 +113,19 @@
     display: none;
   }
 }
+.age_banner{
+  position: relative;
+  &::before{
+    position: absolute;
+    display: inline-block;
+    content:'';
+    top: 0;
+    left: 0;
+    width: 5%;
+    height: 100%;
+    background-color: #ffffff;
+  }
+}
 
 @media (max-width: 600px) {
   .grid {

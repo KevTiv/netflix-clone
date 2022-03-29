@@ -17,6 +17,7 @@ export type movieType = {
 export type MoviePanelProps={
     PanelName: string,
     moviesSelection?: movieType[],
+    lazyLoad?: boolean
 }
 export type homePagePropsType={
   popularMoviesSelection?: movieType[]
@@ -103,4 +104,12 @@ export type videoType={
     official: boolean,
     published_at: string,
     id: string
+}
+
+export type mediaPlayerPropsType={
+    movie?: movieType,
+    isVideoPlay?: boolean,
+    movieTrailerId?: string,
+    videoContainer?: React.RefObject<HTMLDivElement>,
+    videoEnded: ()=>void
 }

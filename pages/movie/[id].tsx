@@ -22,12 +22,13 @@ const Movie:NextPage<moviePageProps> = ({movie, movieTrailerId, similarMoviesSel
       setIsVideoPlay(true)
     },1500)
 
+    console.log(movieTrailerId)
   },[])
   return (
     <>
       <div className=" relative w-full h-[100vh]">
         <div>
-          <div ref={videoContainer} className="relative w-[100vw] aspect-[16/12] pointer-events-none" >
+          <div ref={videoContainer} className="relative w-[100vw] aspect-[16/12]" >
             {isVideoPlay && isScreenMobile && movieTrailerId!==null ? 
               <ReactPlayer className="pointer-events-none" url={`https://www.youtube.com/watch?v=${movieTrailerId}`}
                 width={`${videoContainer.current?.clientWidth}px`} height={`${videoContainer.current?.clientHeight}px`}

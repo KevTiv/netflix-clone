@@ -10,17 +10,13 @@ import Navbar from '../components/navbar'
 import MoviePanel from '../components/moviePanel'
 import { useEffect, useRef, useState } from 'react'
 import Hero from '../components/hero'
+import Footer from '../components/footer'
 
 
 const Home: NextPage<homePagePropsType> = (props) => {
   let appBody = useRef<HTMLElement>(null)
   const [isMobileMenuOpen, setIsOpen] = useState<boolean>(false)
-  const [highlightedHeroMovie, setHighlightedHeroMovie] = useState<number>(0)
-  useEffect(()=>{
-    const highlightPopularMovie=()=> setHighlightedHeroMovie(Math.floor(Math.random() * props.popularMoviesSelection!.length))
-    
-    if(props.popularMoviesSelection)  highlightPopularMovie()
-  },[])
+
   return (
     <div className={styles.container}>
       <Head>
@@ -29,35 +25,23 @@ const Home: NextPage<homePagePropsType> = (props) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Navbar setIsOpen={()=>setIsOpen(!isMobileMenuOpen)} isMobileMenuOpen={isMobileMenuOpen} 
+      <Navbar openMenu={()=>setIsOpen(!isMobileMenuOpen)} isMobileMenuOpen={isMobileMenuOpen} 
         closeMenu={()=>setIsOpen(false)}/>
       <main ref={appBody} className={`${styles.main} mt-16 ${isMobileMenuOpen? 'opacity-40' : 'opacity-100'}`}>
-        <Hero movie={props.popularMoviesSelection?.[highlightedHeroMovie]}/>
-        <MoviePanel PanelName={'Popular on Netflix'} moviesSelection={props.popularMoviesSelection}/>
-        <MoviePanel PanelName={'Trending on Netflix'} moviesSelection={props.trendingMoviesSelection}/>
-        <MoviePanel PanelName={'Action'} moviesSelection={props.actionMoviesSelection}/>
-        <MoviePanel PanelName={'Adventure'} moviesSelection={props.adventureMoviesSelection}/>
-        <MoviePanel PanelName={'Comedy'} moviesSelection={props.comedyMoviesSelection}/>
-        <MoviePanel PanelName={'Family'} moviesSelection={props.familyMoviesSelection}/>
-        <MoviePanel PanelName={'Fantasy'} moviesSelection={props.fantasyMoviesSelection}/>
-        <MoviePanel PanelName={'Romance'} moviesSelection={props.RomanceMoviesSelection}/>
-        <MoviePanel PanelName={'Sci-Fi'} moviesSelection={props.scifiMoviesSelection}/>
-        <MoviePanel PanelName={'History'} moviesSelection={props.historyMoviesSelection}/>
-        <MoviePanel PanelName={'Horror'} moviesSelection={props.horrorMoviesSelection}/>
+        <Hero movie={props.popularMoviesSelection?.[0]}/>
+        <MoviePanel lazyLoad={false} PanelName={'Popular on Netflix'} moviesSelection={props.popularMoviesSelection}/>
+        <MoviePanel lazyLoad={false} PanelName={'Trending on Netflix'} moviesSelection={props.trendingMoviesSelection}/>
+        <MoviePanel lazyLoad={true} PanelName={'Action'} moviesSelection={props.actionMoviesSelection}/>
+        <MoviePanel lazyLoad={true} PanelName={'Adventure'} moviesSelection={props.adventureMoviesSelection}/>
+        <MoviePanel lazyLoad={true} PanelName={'Comedy'} moviesSelection={props.comedyMoviesSelection}/>
+        <MoviePanel lazyLoad={true} PanelName={'Family'} moviesSelection={props.familyMoviesSelection}/>
+        <MoviePanel lazyLoad={true} PanelName={'Fantasy'} moviesSelection={props.fantasyMoviesSelection}/>
+        <MoviePanel lazyLoad={true} PanelName={'Romance'} moviesSelection={props.RomanceMoviesSelection}/>
+        <MoviePanel lazyLoad={true} PanelName={'Sci-Fi'} moviesSelection={props.scifiMoviesSelection}/>
+        <MoviePanel lazyLoad={true} PanelName={'History'} moviesSelection={props.historyMoviesSelection}/>
+        <MoviePanel lazyLoad={true} PanelName={'Horror'} moviesSelection={props.horrorMoviesSelection}/>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/tmdb.svg" alt="TMDB Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+      <Footer/>
     </div>
   )
 }
@@ -76,9 +60,6 @@ export async function getServerSideProps(){
     await axios.get(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY_V3}`)
     .then(( res:AxiosResponse)=>{
         popularMoviesSelection = res.data.results.slice(0,20)
-
-        // movieTrailerId = movie.videos.results.find((video: videoType) => video.name === 'Official Trailer').key
-        // console.log('movieTrailerID==>',movieTrailerId)
     })
     .catch((err:AxiosResponse)=>{
       console.error('Error fetching Popular movie selection ',err)
