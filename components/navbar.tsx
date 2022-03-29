@@ -32,12 +32,12 @@ const Navbar = ({openMenu, isMobileMenuOpen, closeMenu}:navbarPropsType) => {
                 </span>
                 <ul>
                     <li ref={menuRef} className={`absolute md:relative flex flex-col md:flex-row z-10 bg-black md:bg-transparent w-[65vw] h-[100vh] md:w-auto md:h-auto top-12 md:top-0 md:left-0 ${isMobileMenuOpen ? '-left-1' : '-left-[65vw]'} ease-in-out duration-[50ms]`}>
-                        <a className="inline-block p-4 text-2xl md:text-xl lg:text-lg md:font-bold md:text-red-600 text-white lg:text-white ml-4 md:ml-8 my-4 cursor-pointer">Browse</a>
-                        <a href="#action" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-lg md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">Action</a>
-                        <a href="#adventure" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-lg md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">Adventure</a>
-                        <a href="#comedy" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-lg md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">Comedy</a>
-                        <a href="#fantasy" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-lg md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">Fantasy</a>
-                        <a href="#history" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-lg md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">History</a>
+                        <a className="inline-block p-4 text-2xl md:text-xl lg:text-sm md:font-bold md:text-red-600 text-white lg:text-white ml-4 md:ml-8 my-4 cursor-pointer">Browse</a>
+                        <a href="#action" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-sm md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">Action</a>
+                        <a href="#adventure" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-sm md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">Adventure</a>
+                        <a href="#comedy" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-sm md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">Comedy</a>
+                        <a href="#fantasy" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-sm md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">Fantasy</a>
+                        <a href="#history" className="inline-block md:hidden lg:inline-block p-4 text-2xl md:text-xl lg:text-sm md:font-bold text-white ml-4 md:ml-8 my-4 cursor-pointer">History</a>
                     </li>
                 </ul>
             </div>
@@ -55,7 +55,7 @@ const Navbar = ({openMenu, isMobileMenuOpen, closeMenu}:navbarPropsType) => {
                     <span className="relative w-6 h-6">
                         <Image src="/user.png" alt="Netflix Logo" layout="fill"/>
                     </span>
-                    <h3 className="text-lg text-white mx-2">User</h3>
+                    <h3 className="text-md text-white mx-2">User</h3>
                 </div>
             </div>
         </nav>
