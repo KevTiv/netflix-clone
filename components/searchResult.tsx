@@ -40,7 +40,7 @@ const SearchResult = ({searchQuery}:searchResultPropsType) => {
   return (
     <>
         {revealResults? 
-            <div className="absolute left-0 top-10 w-full h-fit bg-black/80">
+            <div className="absolute left-0 top-10 w-[100vw] md:w-full h-fit bg-black/80">
                 <ul>
                     {results?.map((movie)=>{
                         return(
